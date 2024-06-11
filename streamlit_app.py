@@ -54,5 +54,41 @@ if uploaded_file is not None:
     # Display the plot in Streamlit
     st.pyplot(plt)
 
+    # Convert USD values to GBP using the exchange rate
+    exchange_rate = 1.27
+    data['Value in GBP'] = data.apply(lambda row: row['Estimated Value'] if row['Currency'] == 'GBP' else row['Estimated Value'] / exchange_rate, axis=1)
+
+    # Pivot table with months as columns and opportunity names as rows for GBP values
+    pivot_table_with_contact = data.pivot_table(index=['Opportunity Name', 'Contact Name'], columns='Month', values='Value in GBP', aggfunc='sum', fill_value=0)
+
+    # Display the pivot table with opportunity values in GBP
+    st.subheader("Monthly Opportunity Values in GBP")
+    st.dataframe(pivot_table_with_contact)
+
+    # Optionally, display the pivot table as a downloadable CSV
+    st.download_button(
+        label="Download opportunity values as CSV",
+        data=pivot_table_with_contact.to_csv().encode('utf-8'),
+        file_name='monthly_opportunity_values.csv',
+        mime='text/csv',
+    )
+
+    # Sum the values by month for the chart
+    monthly_values = data.groupby('Month')['Value in GBP'].sum().reset_index()
+
+    # Plot the monthly opportunity values in GBP
+    st.subheader("Monthly Opportunity Values in GBP")
+    plt.figure(figsize=(12, 6))
+    plt.bar(monthly_values['Month'], monthly_values['Value in GBP'])
+    plt.title('Monthly Opportunity Values in GBP')
+    plt.xlabel('Month')
+    plt.ylabel('Total Value in GBP')
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+    # Display the plot in Streamlit
+    st.pyplot(plt)
+
 else:
     st.write("Please upload an Excel file to proceed.")
