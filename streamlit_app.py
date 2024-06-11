@@ -90,5 +90,22 @@ if uploaded_file is not None:
     # Display the plot in Streamlit
     st.pyplot(plt)
 
+    # Calculate cumulative values
+    monthly_values['Cumulative Value'] = monthly_values['Value in GBP'].cumsum()
+
+    # Plot the cumulative value of opportunities in GBP
+    st.subheader("Cumulative Opportunity Value in GBP")
+    plt.figure(figsize=(12, 6))
+    plt.plot(monthly_values['Month'], monthly_values['Cumulative Value'], marker='o')
+    plt.title('Cumulative Opportunity Value in GBP')
+    plt.xlabel('Month')
+    plt.ylabel('Cumulative Value in GBP')
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+
+    # Display the plot in Streamlit
+    st.pyplot(plt)
+
 else:
     st.write("Please upload an Excel file to proceed.")
